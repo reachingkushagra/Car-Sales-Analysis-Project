@@ -1,0 +1,181 @@
+create database CarSales;
+use CarSales;
+
+# DISPLAY DATA
+SELECT * FROM cars;
+
+# DIFFERENT COMPANIES
+SELECT DISTInCT Company_Name
+FROM cars;
+
+# TOTAL CARS SOLD OUT
+SELECT count(*) as Total_Cars_Sold
+FROM cars;
+
+# COMPANY WISE CAR SALE
+SELECT Company_Name,COUNT(*) AS QTY_SOLD
+FROM cars
+GROUP BY Company_Name;
+ 
+ 
+ # DIFFERENT FUEL TYPES 
+ SELECT DISTINCT Fuel_Type 
+ FROM cars;
+ 
+ # FUELTYPES DISTRIBUTION
+ SELECT Fuel_Type, Count(*) as Fuel
+ FROM cars
+ GROUP BY Fuel_Type;
+ 
+ # SELLER TYPE 
+ SELECT Seller_Type, Count(*)
+ FROM cars
+ GROUP BY Seller_Type;
+ 
+ # TRANSMISSION
+ SELECT Transmission ,count(*)
+ FROM cars
+ GROUP BY Transmission;
+ 
+ # OWNER
+ SELECT Owner, count(*)
+ FROM Cars
+ GROUP BY Owner;
+ 
+ # TOP 5 SELLING
+SELECT Company_Name,COUNT(*) as QTY_SOLD
+FROM cars
+GROUP BY Company_Name
+ORDER BY QTY_SOLD DESC 
+LIMIT 5;
+ 
+ # HOW MANY PETROL CARS WITH AUTOMATIC TRANSMISSION ARE SOLD BY DEALERS?
+SELECT count(Fuel_Type) as PETROL_AUTO_BY_DEALER
+FROM cars
+WHERE Fuel_Type = 'Petrol' and Transmission = 'Automatic' AND Seller_Type = 'Dealer';
+
+# COMPANIES WHICH SOLD BOTH PETROL AND DIESEL
+SELECT Distinct(Company_Name) 
+FROM cars
+WHERE Fuel_Type='Petrol' or Fuel_Type='Diesel'
+;
+
+# COMPANIES WHICH SOLD MORE THAN 50 CARS
+SELECT Company_Name, COUNT(Company_Name) AS QTY
+FROM Cars
+GROUP BY Company_Name
+HAVING COUNT(*)>50;
+
+# VIEW WHERE CARS ARE SOLD BY DEALERS FOR EACH TRANSMISSION TYPE
+CREATE VIEW EACH_TRANSMISSION_BY_DEALERS AS
+SELECT Transmission , Count(*) as Cars
+FROM Cars
+WHERE Seller_Type='Dealer'
+GROUP BY Transmission
+;
+
+SELECT * FROM EACH_TRANSMISSION_BY_DEALERS;
+
+# SELLERS WHO SOLD ATLEAST 7000
+SELECT Seller_Type,count(*) as QTY
+FROM cars 
+GROUP BY Seller_Type
+HAVING QTY>=7000;
+
+# SALES VARIED BY COMPANY & FUEL
+SELECT Company_Name,Fuel_Type,count(*) as QTY
+FROM cars
+GROUP BY Company_Name,Fuel_Type;
+
+# WHICH 15 COMBINATION OF COMPANY, FUEL & SELLER TYPE IS COMMON? 
+SELECT Company_Name,Fuel_Type,Seller_Type,Count(*) as QTY
+FROM cars
+GROUP BY Company_Name,Fuel_Type,Seller_Type
+ORDER BY QTY DESC
+LIMIT 5;
+
+# NUMBER OF CARS WITH EACH TRANSMISSION TYPE,  GROUPED BY SELLER TYPE FROM HIGHEST TO LOWEST
+SELECT Transmission, Seller_Type ,count(*) as QTY
+FROM cars
+GROUP BY Seller_Type,Transmission
+ORDER BY QTY DESC;
+
+# MOST COMMON TRANSMISSION TYPE 
+SELECT Transmission , count(*) as QTY
+FROM cars
+GROUP BY Transmission
+ORDER BY QTY DESC
+LIMIT 1;
+
+# PERCENTAGE FOR CARS OF EACH FUEL TYPE
+SELECT Fuel_Type, (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM cars)) AS Percentage 
+FROM cars 
+GROUP BY Fuel_Type;
+
+# TOP 5 COMPANIES WITH FIRST OWNED CARS
+SELECT Company_Name,count(*) As Cars_Sold
+FROM cars
+WHERE OWNER='First Owner'
+GROUP BY Company_Name
+ORDER BY Cars_Sold DESC
+LIMIT 5;
+
+# TYPE OF FUEL HAS LEAST SALES
+SELECT Fuel_Type ,Count(*)as QTY
+FROM cars
+GROUP BY Fuel_Type
+ORDER BY QTY ASC;
+
+# SALES BY SELLER TYPE & FUEL TYPE
+SELECT Seller_Type, Fuel_Type , COUNT(*) as QTY_SOLD
+FROM cars
+GROUP BY Seller_Type,Fuel_Type;
+
+# SOLD BY 2 TOP SELLER TYPES
+SELECT Seller_Type , count(*) AS QTY
+FROM cars
+GROUP BY Seller_Type
+ORDER BY QTY DESC
+LIMIT 2;
+
+# TOP 10 COMPANIES WITH HIGHEST NUMBER OF DIESEL CARS
+SELECT Company_Name , Count(*) As QTY
+FROM cars
+WHERE Fuel_Type = 'Diesel'
+GROUP BY Company_Name
+ORDER BY QTY DESC
+LIMIT 10;
+
+# NUMBER OF CARS WHICH ARE NOT FIRST OWNER
+SELECT Owner,Count(*) as TOTAL
+FROM cars 
+WHERE Owner NOT IN ('First Owner')
+GROUP BY Owner;
+
+# MANUAL TRANS. CARS - INDIVIDUAL SELLERS
+SELECT COUNT(*) AS CARS_SOLD
+FROM cars 
+WHERE Transmission = 'Manual' AND Seller_Type = 'Individual';
+
+# DISTRIBUTION FOR FUEL TYPE AND OWNER
+SELECT Fuel_Type,Owner,Count(*) as QTY
+FROM cars
+GROUP BY Fuel_Type,Owner;
+
+# COMPANIES WHICH HAVE BOTH MANUAL AND AUTOMATIC
+SELECT Company_Name 
+FROM cars 
+WHERE Transmission IN ('Manual', 'Automatic') 
+GROUP BY Company_Name 
+HAVING COUNT(DISTINCT Transmission) = 2;
+
+# UNIQUE COMPANIES FOR EACH FUEL TYPE
+SELECT Fuel_Type,Count(distinct Company_Name) as QTY
+FROM cars
+GROUP BY Fuel_Type;
+
+# COMPANIES WHERE MORE THAN 70% CARS ARE MANUAL
+SELECT Company_Name 
+FROM cars 
+GROUP BY Company_Name 
+HAVING SUM(CASE WHEN Transmission = 'Manual' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) > 70;
